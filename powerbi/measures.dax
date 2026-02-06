@@ -1,0 +1,205 @@
+// Power BI Measures for Cupid's Command Center
+// Copy these into your Power BI model
+
+// ============================================
+// SALES MEASURES
+// ============================================
+
+Total Revenue = 
+SUM(FactSales[sales_amount])
+
+Total Orders = 
+COUNTROWS(FactSales)
+
+Average Order Value = 
+DIVIDE([Total Revenue], [Total Orders], 0)
+
+Total Profit = 
+SUM(FactSales[profit])
+
+Profit Margin % = 
+DIVIDE([Total Profit], [Total Revenue], 0) * 100
+
+// Revenue vs Yesterday
+Revenue vs Yesterday = 
+VAR TodayRevenue = [Total Revenue]
+VAR YesterdayRevenue = 
+    CALCULATE(
+        [Total Revenue],
+        DATEADD(DimDate[date], -1, DAY)
+    )
+RETURN
+    DIVIDE(TodayRevenue - YesterdayRevenue, YesterdayRevenue, 0) * 100
+
+// Sales Velocity (orders per hour)
+Sales Velocity = 
+VAR HoursSinceStart = 
+    DATEDIFF(MIN(FactSales[transaction_time]), NOW(), HOUR) + 1
+RETURN
+    DIVIDE([Total Orders], HoursSinceStart, 0)
+
+
+// ============================================
+// INVENTORY & RISK MEASURES
+// ============================================
+
+Low Stock Items = 
+CALCULATE(
+    COUNTROWS(SupplyChain),
+    SupplyChain[stock_level] < 50
+)
+
+Critical Stock Items = 
+CALCULATE(
+    COUNTROWS(SupplyChain),
+    SupplyChain[stock_level] < 25
+)
+
+Hours Until Stockout = 
+DIVIDE(
+    SUM(SupplyChain[stock_level]),
+    [Sales Velocity],
+    999
+)
+
+Risk Score = 
+VAR LowStockRisk = [Low Stock Items] * 3
+VAR DelayRisk = 
+    CALCULATE(COUNTROWS(SupplyChain), SupplyChain[delay_reason] <> "None") * 4
+VAR HighDemandRisk = 
+    IF([Sales Velocity] > 100, 2, 0)
+RETURN
+    MIN(LowStockRisk + DelayRisk + HighDemandRisk, 10)
+
+Risk Level = 
+SWITCH(
+    TRUE(),
+    [Risk Score] >= 7, "🔴 Critical",
+    [Risk Score] >= 4, "🟡 Warning",
+    "🟢 OK"
+)
+
+// ============================================
+// REGIONAL MEASURES
+// ============================================
+
+Regional Revenue = 
+CALCULATE(
+    [Total Revenue],
+    ALLEXCEPT(DimStore, DimStore[country])
+)
+
+Regional Share % = 
+DIVIDE([Total Revenue], CALCULATE([Total Revenue], ALL(DimStore)), 0) * 100
+
+Top Region = 
+TOPN(1, VALUES(DimStore[country]), [Total Revenue], DESC)
+
+
+// ============================================
+// CUSTOMER MEASURES
+// ============================================
+
+Total Customers = 
+DISTINCTCOUNT(FactSales[customer_id])
+
+New Customers Today = 
+CALCULATE(
+    DISTINCTCOUNT(FactSales[customer_id]),
+    FactSales[is_new_customer] = TRUE()
+)
+
+Customer Retention Rate = 
+VAR ReturningCustomers = 
+    CALCULATE(
+        DISTINCTCOUNT(FactSales[customer_id]),
+        FactSales[is_repeat_customer] = TRUE()
+    )
+RETURN
+    DIVIDE(ReturningCustomers, [Total Customers], 0) * 100
+
+Premium Customers % = 
+VAR PremiumCount = 
+    CALCULATE(
+        COUNTROWS(DimCustomer),
+        DimCustomer[loyalty_tier] IN {"Gold", "Platinum"}
+    )
+VAR TotalCount = COUNTROWS(DimCustomer)
+RETURN
+    DIVIDE(PremiumCount, TotalCount, 0) * 100
+
+
+// ============================================
+// DELIVERY MEASURES
+// ============================================
+
+Delayed Orders = 
+CALCULATE(
+    COUNTROWS(SupplyChain),
+    SupplyChain[delay_reason] <> "None"
+)
+
+Delay Rate % = 
+DIVIDE([Delayed Orders], [Total Orders], 0) * 100
+
+Average Delay Days = 
+CALCULATE(
+    AVERAGE(SupplyChain[actual_delay_days]),
+    SupplyChain[delay_reason] <> "None"
+)
+
+On-Time Delivery % = 
+100 - [Delay Rate %]
+
+
+// ============================================
+// KPI CARD MEASURES (with formatting)
+// ============================================
+
+Revenue Display = 
+VAR Revenue = [Total Revenue]
+RETURN
+    IF(
+        Revenue >= 1000000,
+        FORMAT(Revenue / 1000000, "€#,##0.0M"),
+        FORMAT(Revenue, "€#,##0")
+    )
+
+Orders Display = 
+FORMAT([Total Orders], "#,##0")
+
+Risk Display = 
+[Risk Level] & " (" & [Risk Score] & "/10)"
+
+
+// ============================================
+// CONDITIONAL FORMATTING MEASURES
+// ============================================
+
+Stock Level Color = 
+SWITCH(
+    TRUE(),
+    SELECTEDVALUE(SupplyChain[stock_level]) < 25, "#FF0000",
+    SELECTEDVALUE(SupplyChain[stock_level]) < 50, "#FFA500", 
+    SELECTEDVALUE(SupplyChain[stock_level]) < 100, "#FFFF00",
+    "#00FF00"
+)
+
+Revenue Trend Color = 
+IF([Revenue vs Yesterday] >= 0, "#00AA00", "#FF0000")
+
+
+// ============================================
+// TOOLTIP MEASURES
+// ============================================
+
+Product Tooltip = 
+VAR ProductName = SELECTEDVALUE(DimProduct[product_name])
+VAR Stock = SELECTEDVALUE(SupplyChain[stock_level])
+VAR Velocity = [Sales Velocity]
+VAR HoursLeft = DIVIDE(Stock, Velocity, 0)
+RETURN
+    ProductName & UNICHAR(10) &
+    "Stock: " & Stock & " units" & UNICHAR(10) &
+    "Velocity: " & FORMAT(Velocity, "#,##0.0") & "/hr" & UNICHAR(10) &
+    "Time to stockout: " & FORMAT(HoursLeft, "#,##0.0") & " hours"

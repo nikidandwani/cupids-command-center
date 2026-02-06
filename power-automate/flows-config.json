@@ -1,0 +1,277 @@
+{
+  "flows": [
+    {
+      "id": "low-stock-alert",
+      "name": "Low Stock Alert Flow",
+      "description": "Triggers when inventory falls below threshold and sends alerts",
+      "trigger": {
+        "type": "scheduled",
+        "frequency": "every 15 minutes",
+        "alternativeTrigger": "When Power BI alert is triggered"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "action": "Get rows from dataverse/SharePoint",
+          "description": "Query inventory table for low stock items",
+          "parameters": {
+            "table": "SupplyChainInventory",
+            "filter": "stock_level lt 50"
+          }
+        },
+        {
+          "step": 2,
+          "action": "Condition",
+          "description": "Check if any low stock items exist",
+          "condition": "length(body('Get_rows')) > 0"
+        },
+        {
+          "step": 3,
+          "action": "For each low stock item",
+          "subSteps": [
+            {
+              "action": "Compose risk level",
+              "expression": "if(items('Apply_to_each')?['stock_level'] < 25, 'CRITICAL', 'WARNING')"
+            },
+            {
+              "action": "Create Teams adaptive card",
+              "template": "low_stock_alert_card.json"
+            }
+          ]
+        },
+        {
+          "step": 4,
+          "action": "Post adaptive card to Teams channel",
+          "parameters": {
+            "channel": "Cupid Operations",
+            "card": "@{outputs('Create_adaptive_card')}"
+          }
+        },
+        {
+          "step": 5,
+          "action": "Send email to operations manager",
+          "parameters": {
+            "to": "operations@cupidchocolate.com",
+            "subject": "🚨 Low Stock Alert - @{items('Apply_to_each')?['product_name']}",
+            "body": "Stock level: @{items('Apply_to_each')?['stock_level']} units\nAction required: Reorder immediately"
+          }
+        }
+      ]
+    },
+    {
+      "id": "customer-delay-notification",
+      "name": "Customer Delay Notification Flow",
+      "description": "Automatically notifies customers when their order is delayed",
+      "trigger": {
+        "type": "automated",
+        "event": "When a row is modified in Orders table",
+        "condition": "status changed to 'Delayed'"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "action": "Get customer details",
+          "parameters": {
+            "table": "DimCustomer",
+            "lookup": "customer_id eq '@{triggerBody()?['customer_id']}'"
+          }
+        },
+        {
+          "step": 2,
+          "action": "Get order details",
+          "parameters": {
+            "table": "FactSales",
+            "lookup": "order_id eq '@{triggerBody()?['order_id']}'"
+          }
+        },
+        {
+          "step": 3,
+          "action": "Generate AI email content",
+          "connector": "Azure OpenAI",
+          "parameters": {
+            "prompt": "Write a friendly, apologetic email to @{body('Get_customer')?['first_name']} about their delayed Valentine's order. Include: delay reason: @{triggerBody()?['delay_reason']}, new delivery date: @{triggerBody()?['new_delivery_date']}. Keep it warm and offer a 15% discount code CUPIDCARES.",
+            "maxTokens": 300
+          }
+        },
+        {
+          "step": 4,
+          "action": "Send email via Outlook",
+          "parameters": {
+            "to": "@{body('Get_customer')?['email']}",
+            "subject": "Update on your Valentine's order 💝 #@{triggerBody()?['order_id']}",
+            "body": "@{body('Generate_email')?['text']}"
+          }
+        },
+        {
+          "step": 5,
+          "action": "Log notification to SharePoint",
+          "parameters": {
+            "list": "CustomerNotificationLog",
+            "data": {
+              "customer_id": "@{triggerBody()?['customer_id']}",
+              "order_id": "@{triggerBody()?['order_id']}",
+              "notification_type": "Delay",
+              "sent_at": "@{utcNow()}",
+              "discount_offered": "CUPIDCARES - 15%"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "escalation-flow",
+      "name": "Manager Escalation Flow",
+      "description": "Escalates critical issues to management when AI confidence is low",
+      "trigger": {
+        "type": "manual",
+        "caller": "Copilot Studio Bot"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "action": "Parse escalation request",
+          "parameters": {
+            "schema": {
+              "issue_type": "string",
+              "severity": "string",
+              "affected_orders": "integer",
+              "ai_confidence": "number",
+              "recommended_action": "string"
+            }
+          }
+        },
+        {
+          "step": 2,
+          "action": "Determine escalation level",
+          "condition": {
+            "critical": "severity eq 'CRITICAL' or affected_orders gt 500",
+            "high": "severity eq 'HIGH' or affected_orders gt 100",
+            "medium": "default"
+          }
+        },
+        {
+          "step": 3,
+          "action": "Create escalation ticket in ServiceNow/Planner",
+          "parameters": {
+            "title": "ESCALATION: @{triggerBody()?['issue_type']}",
+            "priority": "@{variables('escalation_level')}",
+            "description": "Issue requires human review. AI confidence: @{triggerBody()?['ai_confidence']}%\n\nRecommended action: @{triggerBody()?['recommended_action']}"
+          }
+        },
+        {
+          "step": 4,
+          "action": "Post to Teams - Operations Leadership",
+          "parameters": {
+            "channel": "Leadership Alerts",
+            "message": "🚨 **ESCALATION REQUIRED**\n\nIssue: @{triggerBody()?['issue_type']}\nSeverity: @{variables('escalation_level')}\nAffected Orders: @{triggerBody()?['affected_orders']}\n\nAI Recommendation: @{triggerBody()?['recommended_action']}\n\nPlease review and take action."
+          }
+        },
+        {
+          "step": 5,
+          "action": "Send SMS to on-call manager (if critical)",
+          "condition": "variables('escalation_level') eq 'critical'",
+          "parameters": {
+            "connector": "Twilio",
+            "to": "@{variables('on_call_manager_phone')}",
+            "message": "CUPID ALERT: Critical issue requires immediate attention. Check Teams for details."
+          }
+        }
+      ]
+    },
+    {
+      "id": "daily-summary-report",
+      "name": "Daily Operations Summary",
+      "description": "Generates and sends daily summary report",
+      "trigger": {
+        "type": "scheduled",
+        "frequency": "Daily at 8:00 AM"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "action": "Run Power BI dataset refresh",
+          "parameters": {
+            "datasetId": "cupid-command-center-dataset"
+          }
+        },
+        {
+          "step": 2,
+          "action": "Export Power BI report page as PDF",
+          "parameters": {
+            "reportId": "daily-summary-report",
+            "pages": ["Executive Summary", "Risk Overview"]
+          }
+        },
+        {
+          "step": 3,
+          "action": "Generate AI summary",
+          "connector": "Azure OpenAI",
+          "parameters": {
+            "prompt": "Based on yesterday's metrics, write a brief executive summary (3 bullet points) highlighting: top achievement, biggest risk, and recommended focus for today.",
+            "context": "@{body('Get_KPIs')}"
+          }
+        },
+        {
+          "step": 4,
+          "action": "Send email with report",
+          "parameters": {
+            "to": "leadership@cupidchocolate.com",
+            "subject": "💝 Daily Operations Summary - @{formatDateTime(utcNow(), 'MMMM d, yyyy')}",
+            "body": "@{body('AI_summary')}\n\nFull report attached.",
+            "attachments": "@{body('Export_PDF')}"
+          }
+        }
+      ]
+    }
+  ],
+  
+  "adaptiveCards": {
+    "lowStockAlert": {
+      "type": "AdaptiveCard",
+      "version": "1.4",
+      "body": [
+        {
+          "type": "Container",
+          "style": "attention",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "🚨 LOW STOCK ALERT",
+              "weight": "Bolder",
+              "size": "Large"
+            }
+          ]
+        },
+        {
+          "type": "FactSet",
+          "facts": [
+            {"title": "Product", "value": "${product_name}"},
+            {"title": "Current Stock", "value": "${stock_level} units"},
+            {"title": "Velocity", "value": "${velocity_per_hour}/hour"},
+            {"title": "Time to Stockout", "value": "${hours_remaining} hours"}
+          ]
+        },
+        {
+          "type": "ActionSet",
+          "actions": [
+            {
+              "type": "Action.Submit",
+              "title": "🔄 Trigger Reorder",
+              "data": {"action": "reorder", "product_id": "${product_id}"}
+            },
+            {
+              "type": "Action.Submit",
+              "title": "📧 Alert Supplier",
+              "data": {"action": "alert_supplier", "product_id": "${product_id}"}
+            },
+            {
+              "type": "Action.OpenUrl",
+              "title": "📊 View Dashboard",
+              "url": "https://app.powerbi.com/cupid-command-center"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

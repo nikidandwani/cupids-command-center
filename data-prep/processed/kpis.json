@@ -1,0 +1,11 @@
+{
+  "total_revenue": 193410.22,
+  "total_orders": 10000,
+  "avg_order_value": 19.341022,
+  "total_profit": 3392.8599,
+  "profit_margin": 1.7542298954005635,
+  "at_risk_orders": 59,
+  "low_stock_items": 8,
+  "avg_lead_time": 11.25,
+  "total_customers": 2000
+}

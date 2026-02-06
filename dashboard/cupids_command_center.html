@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💝 Cupid's Command Center</title>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a2e;
+            color: white;
+            min-height: 100vh;
+        }
+        
+        /* Main Layout */
+        .app-container {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            height: 100vh;
+        }
+        .main-content {
+            padding: 15px;
+            overflow-y: auto;
+        }
+        
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #E91E63 0%, #9C27B0 100%);
+            border-radius: 10px;
+            margin-bottom: 12px;
+        }
+        .header h1 { font-size: 1.5em; }
+        .header-right { display: flex; gap: 10px; align-items: center; }
+        .filter-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            padding: 6px 14px;
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .filter-btn:hover { background: rgba(255,255,255,0.3); }
+        .filter-btn.active { background: white; color: #E91E63; }
+        .live-dot {
+            width: 8px; height: 8px;
+            background: #4CAF50;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+            margin-right: 5px;
+            display: inline-block;
+        }
+        @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+        
+        /* Alert Banner */
+        .chaos-banner {
+            background: linear-gradient(90deg, #F44336 0%, #c62828 100%);
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .chaos-banner:hover { transform: scale(1.01); }
+        .chaos-banner .alerts { display: flex; gap: 20px; flex-wrap: wrap; }
+        .alert-item { 
+            cursor: pointer; 
+            padding: 4px 8px; 
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        .alert-item:hover { background: rgba(255,255,255,0.2); }
+        
+        /* KPI Row */
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .kpi-card {
+            background: #16213e;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border-left: 4px solid #E91E63;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .kpi-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(233,30,99,0.3); }
+        .kpi-label { font-size: 0.75em; color: #888; margin-bottom: 5px; }
+        .kpi-value { font-size: 1.6em; font-weight: bold; }
+        .kpi-change { font-size: 0.75em; margin-top: 3px; color: #4CAF50; }
+        
+        /* Cards */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .card {
+            background: #16213e;
+            border-radius: 10px;
+            padding: 12px;
+        }
+        .card-title {
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #E91E63;
+        }
+        
+        /* Interactive Table */
+        .alert-table { width: 100%; border-collapse: collapse; }
+        .alert-table th {
+            text-align: left;
+            padding: 8px;
+            background: #0f3460;
+            font-size: 0.75em;
+            color: #aaa;
+        }
+        .alert-table td {
+            padding: 8px;
+            border-bottom: 1px solid #0f3460;
+            font-size: 0.8em;
+        }
+        .alert-table tr {
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .alert-table tr:hover { background: rgba(233,30,99,0.2); }
+        .status-badge {
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.75em;
+            font-weight: 600;
+        }
+        .status-critical { background: #F44336; }
+        .status-warning { background: #FF9800; color: #333; }
+        .status-ok { background: #4CAF50; }
+        
+        /* Copilot Panel */
+        .copilot-panel {
+            background: #0f0f23;
+            border-left: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .copilot-header {
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .copilot-header h2 { font-size: 1.1em; }
+        .copilot-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+        }
+        .message {
+            margin-bottom: 15px;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .message.user {
+            text-align: right;
+        }
+        .message.user .bubble {
+            background: #E91E63;
+            display: inline-block;
+            padding: 10px 15px;
+            border-radius: 15px 15px 0 15px;
+            max-width: 85%;
+        }
+        .message.ai .bubble {
+            background: #1e1e3f;
+            padding: 12px 15px;
+            border-radius: 15px 15px 15px 0;
+            border: 1px solid #333;
+        }
+        .message.ai .bubble h4 {
+            color: #E91E63;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+        }
+        .message.ai .bubble ul {
+            margin: 8px 0 8px 20px;
+            font-size: 0.85em;
+        }
+        .message.ai .bubble li { margin: 5px 0; }
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 10px;
+        }
+        .typing-indicator span {
+            width: 8px; height: 8px;
+            background: #666;
+            border-radius: 50%;
+            animation: typing 1s infinite;
+        }
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typing { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+        
+        .copilot-input {
+            padding: 15px;
+            border-top: 1px solid #333;
+        }
+        .input-wrapper {
+            display: flex;
+            gap: 10px;
+        }
+        .copilot-input input {
+            flex: 1;
+            background: #1e1e3f;
+            border: 1px solid #444;
+            padding: 12px 15px;
+            border-radius: 25px;
+            color: white;
+            font-size: 0.9em;
+        }
+        .copilot-input input:focus { outline: none; border-color: #E91E63; }
+        .copilot-input button {
+            background: #E91E63;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            color: white;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .copilot-input button:hover { background: #c2185b; }
+        
+        .quick-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .quick-btn {
+            background: #1e1e3f;
+            border: 1px solid #444;
+            padding: 8px 12px;
+            border-radius: 20px;
+            color: #aaa;
+            font-size: 0.75em;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .quick-btn:hover { background: #E91E63; color: white; border-color: #E91E63; }
+        
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal {
+            background: #16213e;
+            border-radius: 15px;
+            padding: 25px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: modalIn 0.3s ease;
+        }
+        @keyframes modalIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #E91E63;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 1.5em;
+            cursor: pointer;
+        }
+        .modal-close:hover { color: white; }
+        .modal-stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #333;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+        .modal-btn:hover { transform: scale(1.02); }
+        .modal-btn.primary { background: #E91E63; color: white; }
+        .modal-btn.secondary { background: #333; color: white; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Main Dashboard -->
+        <div class="main-content">
+            <div class="header">
+                <h1>💝 Cupid's Command Center</h1>
+                <div class="header-right">
+                    <span><span class="live-dot"></span> LIVE</span>
+                    <button class="filter-btn active" onclick="setFilter('all')">All Regions</button>
+                    <button class="filter-btn" onclick="setFilter('EU')">🇪🇺 Europe</button>
+                    <button class="filter-btn" onclick="setFilter('US')">🇺🇸 Americas</button>
+                </div>
+            </div>
+            
+            <div class="chaos-banner" onclick="showModal('alerts')">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: bold;">⚠️ ACTIVE ALERTS - Click for details</span>
+                    <div class="alerts">
+                        <span class="alert-item" onclick="event.stopPropagation(); showModal('germany')">🌨️ Germany: 847 affected</span>
+                        <span class="alert-item" onclick="event.stopPropagation(); showModal('stock')">📦 Low Stock: 23 units</span>
+                        <span class="alert-item" onclick="event.stopPropagation(); showModal('velocity')">📈 +23% above forecast</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="kpi-row">
+                <div class="kpi-card" onclick="showModal('revenue')">
+                    <div class="kpi-label">💰 TOTAL REVENUE</div>
+                    <div class="kpi-value">€193,410</div>
+                    <div class="kpi-change">+12% vs yesterday ▲</div>
+                </div>
+                <div class="kpi-card" onclick="showModal('orders')">
+                    <div class="kpi-label">📦 TOTAL ORDERS</div>
+                    <div class="kpi-value">10,000</div>
+                    <div class="kpi-change">+8% vs yesterday ▲</div>
+                </div>
+                <div class="kpi-card" onclick="showModal('risk')" style="border-left-color: #FF9800;">
+                    <div class="kpi-label">⚡ RISK LEVEL</div>
+                    <div class="kpi-value" style="color: #FF9800;">🟡 Warning</div>
+                    <div class="kpi-change" style="color: #888;">Score: 4.2/10</div>
+                </div>
+                <div class="kpi-card" onclick="showModal('alerts')" style="border-left-color: #F44336;">
+                    <div class="kpi-label">🚨 ACTIVE ALERTS</div>
+                    <div class="kpi-value" style="color: #F44336;">67</div>
+                    <div class="kpi-change" style="color: #888;">16 Critical, 51 Warning</div>
+                </div>
+            </div>
+            
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-title">🌍 Sales by Region (Click to drill down)</div>
+                    <div id="region-chart"></div>
+                </div>
+                <div class="card">
+                    <div class="card-title">🎯 Risk Radar</div>
+                    <div id="risk-gauge"></div>
+                </div>
+            </div>
+            
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-title">📦 Inventory Alerts (Click row for details)</div>
+                    <table class="alert-table">
+                        <thead><tr><th>Status</th><th>Product</th><th>Stock</th><th>Hours Left</th></tr></thead>
+                        <tbody>
+                            <tr onclick="showModal('truffles')">
+                                <td><span class="status-badge status-critical">🔴</span></td>
+                                <td>Dark Chocolate Truffles</td><td>23</td><td>4 hrs</td>
+                            </tr>
+                            <tr onclick="showModal('heartbox')">
+                                <td><span class="status-badge status-critical">🔴</span></td>
+                                <td>Heart Box Large</td><td>45</td><td>6 hrs</td>
+                            </tr>
+                            <tr onclick="showModal('rose')">
+                                <td><span class="status-badge status-warning">🟡</span></td>
+                                <td>Rose Collection</td><td>120</td><td>10 hrs</td>
+                            </tr>
+                            <tr onclick="showModal('premium')">
+                                <td><span class="status-badge status-ok">🟢</span></td>
+                                <td>Premium Dark 200g</td><td>350</td><td>28 hrs</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card">
+                    <div class="card-title">🚚 Delivery Delays (Click row for recovery plan)</div>
+                    <table class="alert-table">
+                        <thead><tr><th>Region</th><th>Affected</th><th>Delay</th><th>Status</th></tr></thead>
+                        <tbody>
+                            <tr onclick="showModal('germany')">
+                                <td>🇩🇪 Germany</td><td><strong>847</strong></td><td>2.3 days</td>
+                                <td><span class="status-badge status-critical">🔴</span></td>
+                            </tr>
+                            <tr onclick="showModal('belgium')">
+                                <td>🇧🇪 Belgium</td><td>234</td><td>1.5 days</td>
+                                <td><span class="status-badge status-warning">🟡</span></td>
+                            </tr>
+                            <tr onclick="showModal('france')">
+                                <td>🇫🇷 France</td><td>156</td><td>1.2 days</td>
+                                <td><span class="status-badge status-warning">🟡</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-title">🍫 Top Products</div>
+                    <div id="products-chart"></div>
+                </div>
+                <div class="card">
+                    <div class="card-title">⏱️ Delay Reasons</div>
+                    <div id="delay-chart"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- AI Copilot Panel -->
+        <div class="copilot-panel">
+            <div class="copilot-header">
+                <span style="font-size: 1.5em;">🤖</span>
+                <h2>Cupid's AI Copilot</h2>
+                <button onclick="toggleCopilotMode()" id="mode-toggle" style="margin-left: auto; background: rgba(255,255,255,0.2); border: none; padding: 5px 10px; border-radius: 15px; color: white; font-size: 0.75em; cursor: pointer;">Demo Mode</button>
+            </div>
+            
+            <!-- Option 1: Embedded Copilot Studio Agent (uncomment and add your URL) -->
+            <div id="copilot-embed" style="display: none; flex: 1;">
+                <iframe id="copilot-iframe" 
+                        src="" 
+                        frameborder="0" 
+                        style="width: 100%; height: 100%; border: none;">
+                </iframe>
+            </div>
+            
+            <!-- Option 2: Demo/Simulation Mode (default) -->
+            <div id="copilot-demo" style="display: flex; flex-direction: column; flex: 1;">
+                <div class="copilot-messages" id="chat-messages">
+                    <div class="message ai">
+                        <div class="bubble">
+                            <h4>👋 Hello! I'm Cupid's AI Copilot</h4>
+                            <p>I can help you monitor operations, identify risks, and take action. Try asking me:</p>
+                            <ul>
+                                <li>"What's the biggest risk right now?"</li>
+                                <li>"Draft customer notification for Germany"</li>
+                                <li>"Show me sales performance"</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="copilot-input">
+                    <div class="quick-actions">
+                        <button class="quick-btn" onclick="askCopilot('What\'s the biggest risk right now?')">🚨 Biggest Risk</button>
+                        <button class="quick-btn" onclick="askCopilot('Draft customer notification for Germany delays')">✉️ Draft Email</button>
+                        <button class="quick-btn" onclick="askCopilot('Create recovery plan')">📋 Recovery Plan</button>
+                    </div>
+                    <div class="input-wrapper">
+                        <input type="text" id="user-input" placeholder="Ask Cupid's AI Copilot..." onkeypress="if(event.key==='Enter')sendMessage()">
+                        <button onclick="sendMessage()">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal-overlay" onclick="closeModal()">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3 id="modal-title">Details</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="modal-content"></div>
+        </div>
+    </div>
+    
+    <script>
+        const pink = '#E91E63';
+        const purple = '#9C27B0';
+        
+        // Charts
+        Plotly.newPlot('region-chart', [{
+            x: [15918.0, 15483.0, 12301.0, 11477.0, 11376.0, 11005.0, 10286.0, 9978.0],
+            y: ['SE', 'FR', 'SG', 'BR', 'IT', 'AU', 'US', 'PL'],
+            type: 'bar',
+            orientation: 'h',
+            marker: { color: [15918.0, 15483.0, 12301.0, 11477.0, 11376.0, 11005.0, 10286.0, 9978.0], colorscale: [[0, purple], [1, pink]] },
+            text: [15918.0, 15483.0, 12301.0, 11477.0, 11376.0, 11005.0, 10286.0, 9978.0].map(v => '€' + v.toLocaleString()),
+            textposition: 'outside',
+        }], {
+            margin: { l: 50, r: 70, t: 10, b: 30 },
+            xaxis: { showgrid: false, showticklabels: false },
+            yaxis: { autorange: 'reversed' },
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            font: { color: 'white', size: 11 }
+        }, { responsive: true, displayModeBar: false });
+        
+        document.getElementById('region-chart').on('plotly_click', function(data) {
+            const country = data.points[0].y;
+            showModal('country_' + country);
+        });
+        
+        Plotly.newPlot('risk-gauge', [{
+            type: 'indicator',
+            mode: 'gauge+number',
+            value: 4.2,
+            title: { text: 'Risk Score', font: { color: 'white', size: 12 } },
+            number: { font: { color: 'white', size: 36 } },
+            gauge: {
+                axis: { range: [0, 10], tickcolor: 'white', tickfont: { color: 'white' } },
+                bar: { color: pink },
+                bgcolor: '#0f3460',
+                steps: [
+                    { range: [0, 4], color: '#4CAF50' },
+                    { range: [4, 7], color: '#FF9800' },
+                    { range: [7, 10], color: '#F44336' }
+                ],
+            }
+        }], {
+            margin: { t: 60, b: 30, l: 30, r: 30 },
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            font: { color: 'white' }
+        }, { responsive: true, displayModeBar: false });
+        
+        Plotly.newPlot('products-chart', [{
+            x: [5771.0, 5383.0, 5367.0, 5294.0, 5094.0, 4907.0, 4731.0, 4705.0],
+            y: ['Apollo Almond Praline 200g', 'Venus Salted Caramel Bites 90g', 'Apollo Strawberry Praline 200g', 'Venus White Assorted 150g', 'Apollo Matcha Bites 100g', 'Venus Orange Assorted 150g', 'Venus Matcha Praline 100g', 'Eros Salted Caramel Assorted 75g'],
+            type: 'bar',
+            orientation: 'h',
+            marker: { color: purple },
+            text: [5771.0, 5383.0, 5367.0, 5294.0, 5094.0, 4907.0, 4731.0, 4705.0].map(v => '€' + v.toLocaleString()),
+            textposition: 'outside',
+        }], {
+            margin: { l: 150, r: 60, t: 10, b: 30 },
+            xaxis: { showgrid: false, showticklabels: false },
+            yaxis: { autorange: 'reversed' },
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            font: { color: 'white', size: 10 }
+        }, { responsive: true, displayModeBar: false });
+        
+        Plotly.newPlot('delay-chart', [{
+            values: [17, 15, 15, 12],
+            labels: ['Transport Strike', 'Weather', 'Supplier Issue', 'Customs'],
+            type: 'pie',
+            hole: 0.4,
+            marker: { colors: ['#F44336', '#FF9800', purple, pink] },
+            textinfo: 'label+percent',
+            textfont: { color: 'white', size: 10 },
+        }], {
+            margin: { t: 10, b: 10, l: 10, r: 10 },
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            showlegend: false,
+            font: { color: 'white' }
+        }, { responsive: true, displayModeBar: false });
+        
+        // Modal Data
+        const modalData = {
+            germany: {
+                title: '🇩🇪 Germany Delivery Delays',
+                content: `
+                    <div class="modal-stat"><span>Orders Affected:</span><strong style="color: #F44336;">847</strong></div>
+                    <div class="modal-stat"><span>Average Delay:</span><strong>2.3 days</strong></div>
+                    <div class="modal-stat"><span>Reason:</span><strong>Weather (Snowstorm)</strong></div>
+                    <div class="modal-stat"><span>Estimated Resolution:</span><strong>Feb 8, 2026</strong></div>
+                    <div class="modal-stat"><span>Premium Customers Affected:</span><strong>127</strong></div>
+                    <h4 style="margin: 20px 0 10px; color: #E91E63;">🤖 AI Recommended Actions:</h4>
+                    <ul style="margin-left: 20px; line-height: 1.8;">
+                        <li>Send proactive delay notification to all 847 customers</li>
+                        <li>Offer 15% discount code (CUPID15) for next purchase</li>
+                        <li>Priority callback for 127 Premium tier customers</li>
+                        <li>Reroute via Munich warehouse for local fulfillment</li>
+                    </ul>
+                    <div class="modal-actions">
+                        <button class="modal-btn primary" onclick="askCopilot('Draft customer notification for Germany delays'); closeModal();">✉️ Draft Email</button>
+                        <button class="modal-btn secondary" onclick="askCopilot('Create recovery plan for Germany'); closeModal();">📋 Recovery Plan</button>
+                    </div>
+                `
+            },
+            truffles: {
+                title: '🍫 Dark Chocolate Truffles - CRITICAL',
+                content: `
+                    <div class="modal-stat"><span>Current Stock:</span><strong style="color: #F44336;">23 units</strong></div>
+                    <div class="modal-stat"><span>Sales Velocity:</span><strong>6 units/hour</strong></div>
+                    <div class="modal-stat"><span>Time to Stockout:</span><strong style="color: #F44336;">~4 hours</strong></div>
+                    <div class="modal-stat"><span>Supplier:</span><strong>Belgian Artisan Co.</strong></div>
+                    <div class="modal-stat"><span>Lead Time:</span><strong>48 hours</strong></div>
+                    <h4 style="margin: 20px 0 10px; color: #E91E63;">🤖 AI Recommended Actions:</h4>
+                    <ul style="margin-left: 20px; line-height: 1.8;">
+                        <li>Trigger emergency reorder (500 units) - Supplier #7</li>
+                        <li>Enable "Low Stock" badge on website</li>
+                        <li>Suggest alternative: Premium Dark Collection</li>
+                    </ul>
+                    <div class="modal-actions">
+                        <button class="modal-btn primary" onclick="alert('✅ Emergency reorder triggered!'); closeModal();">🚀 Trigger Reorder</button>
+                        <button class="modal-btn secondary" onclick="closeModal();">Cancel</button>
+                    </div>
+                `
+            },
+            alerts: {
+                title: '🚨 Active Alerts Summary',
+                content: `
+                    <h4 style="color: #F44336; margin-bottom: 15px;">Critical (16)</h4>
+                    <ul style="margin-left: 20px; line-height: 2;">
+                        <li>🌨️ Germany weather delays - 847 orders</li>
+                        <li>📦 Dark Truffles - 4 hours to stockout</li>
+                    </ul>
+                    <h4 style="color: #FF9800; margin: 20px 0 15px;">Warning (51)</h4>
+                    <ul style="margin-left: 20px; line-height: 2;">
+                        <li>📦 Heart Box Large - 6 hours to stockout</li>
+                        <li>🇧🇪 Belgium customs delay - 234 orders</li>
+                        <li>🇫🇷 France transport strike - 156 orders</li>
+                    </ul>
+                    <div class="modal-actions">
+                        <button class="modal-btn primary" onclick="askCopilot('What\'s the biggest risk right now?'); closeModal();">🤖 Ask AI for Priority</button>
+                    </div>
+                `
+            },
+            risk: {
+                title: '⚡ Risk Assessment Details',
+                content: `
+                    <div class="modal-stat"><span>Overall Risk Score:</span><strong style="color: #FF9800;">4.2/10</strong></div>
+                    <div class="modal-stat"><span>Status:</span><strong>🟡 Warning</strong></div>
+                    <h4 style="margin: 20px 0 10px;">Risk Breakdown:</h4>
+                    <div class="modal-stat"><span>📦 Inventory Risk:</span><strong>High (3 items critical)</strong></div>
+                    <div class="modal-stat"><span>🚚 Delivery Risk:</span><strong>Medium (1,237 delayed)</strong></div>
+                    <div class="modal-stat"><span>📈 Demand Risk:</span><strong>Medium (+23% above forecast)</strong></div>
+                    <div class="modal-stat"><span>💰 Revenue Risk:</span><strong>Low (on track)</strong></div>
+                `
+            }
+        };
+        
+        // Add country-specific modals
+        ['SE', 'FR', 'SG', 'BR', 'IT', 'AU', 'US', 'PL'].forEach((country, i) => {
+            modalData['country_' + country] = {
+                title: '🌍 ' + country + ' Region Details',
+                content: `
+                    <div class="modal-stat"><span>Revenue:</span><strong>€${[15918.0, 15483.0, 12301.0, 11477.0, 11376.0, 11005.0, 10286.0, 9978.0][i].toLocaleString()}</strong></div>
+                    <div class="modal-stat"><span>Orders:</span><strong>${Math.floor([15918.0, 15483.0, 12301.0, 11477.0, 11376.0, 11005.0, 10286.0, 9978.0][i] / 19)}</strong></div>
+                    <div class="modal-stat"><span>Avg Order Value:</span><strong>€${(19 + Math.random() * 10).toFixed(2)}</strong></div>
+                    <div class="modal-actions">
+                        <button class="modal-btn primary" onclick="askCopilot('Show me details for ' + '${country}'); closeModal();">📊 Full Analysis</button>
+                    </div>
+                `
+            };
+        });
+        
+        function showModal(type) {
+            const data = modalData[type] || { title: 'Details', content: '<p>No details available.</p>' };
+            document.getElementById('modal-title').textContent = data.title;
+            document.getElementById('modal-content').innerHTML = data.content;
+            document.getElementById('modal-overlay').classList.add('show');
+        }
+        
+        function closeModal() {
+            document.getElementById('modal-overlay').classList.remove('show');
+        }
+        
+        function setFilter(region) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            // In real app, this would filter the data
+            addMessage('ai', `<h4>🔍 Filter Applied: ${region === 'all' ? 'All Regions' : region}</h4><p>Dashboard updated to show ${region === 'all' ? 'global' : region} data.</p>`);
+        }
+        
+        // Copilot Chat
+        const aiResponses = {
+            'risk': `<h4>🚨 Current Risk Assessment</h4>
+                <p>I've identified <strong>3 critical issues</strong> requiring immediate attention:</p>
+                <ol>
+                    <li><strong style="color: #F44336;">Stock Alert - Belgium Warehouse</strong><br>
+                    Dark Chocolate Truffles: Only 23 units remaining<br>
+                    Projected stockout in 4 hours at current sales velocity<br>
+                    <em>→ Recommendation: Trigger emergency reorder from Supplier #7</em></li>
+                    <li><strong style="color: #F44336;">Delivery Delay - Germany Region</strong><br>
+                    847 orders affected by weather conditions<br>
+                    Average delay: 2.3 days<br>
+                    <em>→ Recommendation: Send proactive customer notifications</em></li>
+                    <li><strong style="color: #FF9800;">High Return Rate - Gift Boxes</strong><br>
+                    Return rate: 8.2% (threshold: 5%)<br>
+                    Primary reason: Damaged packaging<br>
+                    <em>→ Recommendation: Quality check with fulfillment center</em></li>
+                </ol>
+                <p>Would you like me to draft customer communications or create a recovery plan?</p>`,
+            'email': `<h4>✉️ Draft Customer Notification</h4>
+                <div style="background: #0f3460; padding: 15px; border-radius: 8px; margin: 10px 0; font-size: 0.9em;">
+                    <p><strong>Subject:</strong> Your Valentine's Gift is On Its Way! 💝</p>
+                    <hr style="border-color: #333; margin: 10px 0;">
+                    <p>Dear [Customer Name],</p>
+                    <p>Your Valentine's gift is on its way! Due to weather conditions in Germany, delivery is now expected by <strong>[Updated Date]</strong>.</p>
+                    <p>As our thank you for your patience, here's <strong>15% off</strong> your next order:</p>
+                    <p style="text-align: center; font-size: 1.2em; color: #E91E63;"><strong>CUPID15</strong></p>
+                    <p>Track your order: [Tracking Link]</p>
+                    <p>With love,<br>The Cupid Chocolate Team 💝</p>
+                </div>
+                <p>Ready to send to <strong>847 customers</strong>. Should I trigger the notification now?</p>`,
+            'recovery': `<h4>📋 Recovery Plan: Germany Delays</h4>
+                <p><strong>Situation:</strong> 847 orders delayed due to weather (avg 2.3 days)</p>
+                <h5 style="margin-top: 15px;">Immediate Actions (Next 2 hours):</h5>
+                <ul>
+                    <li>✉️ Send proactive delay notification to all affected customers</li>
+                    <li>🎁 Include 15% discount code (CUPID15) for next purchase</li>
+                    <li>📞 Priority callback for 127 Premium tier customers</li>
+                </ul>
+                <h5 style="margin-top: 15px;">Short-term (Today):</h5>
+                <ul>
+                    <li>🚛 Reroute remaining shipments via alternative carrier</li>
+                    <li>📦 Activate Munich warehouse for local fulfillment</li>
+                    <li>📊 Update delivery estimates in tracking system</li>
+                </ul>
+                <p style="margin-top: 15px;">Shall I trigger the automated notifications now?</p>`,
+            'sales': `<h4>📊 Sales Performance Dashboard</h4>
+                <p><strong>Today's Metrics (Real-time)</strong></p>
+                <ul>
+                    <li>Total Revenue: <strong>€193,410</strong> (+12% vs yesterday)</li>
+                    <li>Orders Processed: <strong>10,000</strong></li>
+                    <li>Average Order Value: <strong>€19.34</strong></li>
+                </ul>
+                <p><strong>Top Performing Regions:</strong></p>
+                <ol>
+                    <li>🇳🇱 Netherlands: €52,340 (21% of total)</li>
+                    <li>🇩🇪 Germany: €48,920 (20% of total)</li>
+                    <li>🇬🇧 UK: €41,560 (17% of total)</li>
+                </ol>
+                <p>💡 <strong>Insight:</strong> Sales velocity is 23% higher than forecast. Consider activating backup inventory.</p>`
+        };
+        
+        function addMessage(type, content) {
+            const messages = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            div.className = 'message ' + type;
+            div.innerHTML = '<div class="bubble">' + content + '</div>';
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
+        }
+        
+        function showTyping() {
+            const messages = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            div.className = 'message ai';
+            div.id = 'typing';
+            div.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
+        }
+        
+        function hideTyping() {
+            const typing = document.getElementById('typing');
+            if (typing) typing.remove();
+        }
+        
+        function askCopilot(question) {
+            addMessage('user', question);
+            showTyping();
+            
+            setTimeout(() => {
+                hideTyping();
+                let response = '';
+                const q = question.toLowerCase();
+                if (q.includes('risk') || q.includes('problem') || q.includes('issue') || q.includes('worry')) {
+                    response = aiResponses.risk;
+                } else if (q.includes('email') || q.includes('notification') || q.includes('draft') || q.includes('customer')) {
+                    response = aiResponses.email;
+                } else if (q.includes('recovery') || q.includes('plan') || q.includes('fix') || q.includes('solve')) {
+                    response = aiResponses.recovery;
+                } else if (q.includes('sales') || q.includes('revenue') || q.includes('performance')) {
+                    response = aiResponses.sales;
+                } else {
+                    response = `<h4>🤔 I can help with that!</h4><p>Based on your query about "<em>${question}</em>", let me analyze the current data...</p><p>Try asking about:</p><ul><li>Current risks and alerts</li><li>Sales performance</li><li>Customer communications</li><li>Recovery plans</li></ul>`;
+                }
+                addMessage('ai', response);
+            }, 1500);
+        }
+        
+        function sendMessage() {
+            const input = document.getElementById('user-input');
+            const question = input.value.trim();
+            if (question) {
+                askCopilot(question);
+                input.value = '';
+            }
+        }
+        
+        // ========================================
+        // COPILOT STUDIO INTEGRATION
+        // ========================================
+        
+        // INSTRUCTIONS: Replace this URL with your actual Copilot Studio embed URL
+        // Get it from: Copilot Studio > Your Agent > Channels > Custom website > Copy embed code
+        const COPILOT_STUDIO_URL = ''; // e.g., 'https://copilotstudio.microsoft.com/environments/xxx/bots/xxx/webchat?...'
+        
+        let isEmbedMode = false;
+        
+        function toggleCopilotMode() {
+            isEmbedMode = !isEmbedMode;
+            const embedDiv = document.getElementById('copilot-embed');
+            const demoDiv = document.getElementById('copilot-demo');
+            const toggleBtn = document.getElementById('mode-toggle');
+            const iframe = document.getElementById('copilot-iframe');
+            
+            if (isEmbedMode && COPILOT_STUDIO_URL) {
+                embedDiv.style.display = 'flex';
+                demoDiv.style.display = 'none';
+                toggleBtn.textContent = 'Live Mode';
+                toggleBtn.style.background = '#4CAF50';
+                if (!iframe.src) {
+                    iframe.src = COPILOT_STUDIO_URL;
+                }
+            } else if (isEmbedMode && !COPILOT_STUDIO_URL) {
+                alert('⚠️ Copilot Studio URL not configured!\n\nTo use Live Mode:\n1. Publish your agent in Copilot Studio\n2. Go to Channels > Custom website\n3. Copy the embed URL\n4. Add it to COPILOT_STUDIO_URL in the dashboard code');
+                isEmbedMode = false;
+            } else {
+                embedDiv.style.display = 'none';
+                demoDiv.style.display = 'flex';
+                toggleBtn.textContent = 'Demo Mode';
+                toggleBtn.style.background = 'rgba(255,255,255,0.2)';
+            }
+        }
+        
+        // Auto-switch to Live mode if URL is configured
+        if (COPILOT_STUDIO_URL) {
+            document.getElementById('mode-toggle').textContent = '🔴 Live Available';
+            document.getElementById('mode-toggle').title = 'Click to switch to Live Copilot Studio agent';
+        }
+    </script>
+</body>
+</html>

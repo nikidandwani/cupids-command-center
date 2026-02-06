@@ -1,0 +1,101 @@
+order_id,product_id,vendor_lead_time_days,stock_level,order_quantity,delay_reason,region,cost_per_unit,sustainability_score,risk_level,alert_status
+ORD00001,PROD031,5,116,200,None,Europe,28.3,0.93,3,🟢 OK
+ORD00002,PROD013,5,212,100,Transport Strike,Latin America,17.46,0.72,4,🟢 OK
+ORD00003,PROD032,10,470,185,Weather,Asia Pacific,24.66,0.96,4,🟢 OK
+ORD00004,PROD006,12,110,200,Customs,Latin America,29.91,0.97,8,🔴 Critical
+ORD00005,PROD066,6,265,150,None,Europe,8.76,0.89,0,🟢 OK
+ORD00006,PROD051,14,486,73,None,North America,13.71,0.96,1,🟢 OK
+ORD00007,PROD005,4,176,91,Customs,North America,45.23,0.95,4,🟢 OK
+ORD00008,PROD042,11,230,66,None,Latin America,9.36,0.84,1,🟢 OK
+ORD00009,PROD001,13,318,147,Supplier Issue,Latin America,40.02,0.68,5,🟡 Warning
+ORD00010,PROD029,14,358,193,Transport Strike,Latin America,31.48,0.99,5,🟡 Warning
+ORD00011,PROD005,10,393,111,Weather,Asia Pacific,18.22,0.74,4,🟢 OK
+ORD00012,PROD024,3,346,64,Supplier Issue,Europe,20.41,0.97,4,🟢 OK
+ORD00013,PROD033,12,313,115,None,Europe,9.16,0.68,1,🟢 OK
+ORD00014,PROD020,21,196,155,None,Latin America,29.31,0.94,2,🟢 OK
+ORD00015,PROD052,12,118,140,None,Latin America,8.29,0.59,4,🟢 OK
+ORD00016,PROD063,13,269,159,None,Asia Pacific,35.1,0.52,1,🟢 OK
+ORD00017,PROD049,3,51,153,Transport Strike,North America,35.1,0.87,8,🔴 Critical
+ORD00018,PROD019,9,408,99,Weather,North America,46.07,0.83,4,🟢 OK
+ORD00019,PROD002,11,327,105,None,Europe,38.42,0.99,1,🟢 OK
+ORD00020,PROD004,19,92,122,None,Asia Pacific,35.51,0.9,6,🟡 Warning
+ORD00021,PROD007,7,481,138,None,North America,24.87,0.93,0,🟢 OK
+ORD00022,PROD004,11,403,51,None,North America,25.76,0.71,1,🟢 OK
+ORD00023,PROD012,14,329,145,None,Asia Pacific,35.16,0.99,1,🟢 OK
+ORD00024,PROD028,10,31,32,Weather,Asia Pacific,19.12,0.62,10,🔴 Critical
+ORD00025,PROD050,5,62,171,Weather,Europe,29.91,0.67,8,🔴 Critical
+ORD00026,PROD050,7,475,169,None,Latin America,41.27,0.61,0,🟢 OK
+ORD00027,PROD054,9,108,65,None,North America,30.6,0.75,0,🟢 OK
+ORD00028,PROD048,17,468,106,Transport Strike,North America,10.45,0.5,6,🟡 Warning
+ORD00029,PROD045,14,241,107,Customs,Latin America,36.87,0.58,5,🟡 Warning
+ORD00030,PROD058,11,22,22,Customs,Asia Pacific,34.6,0.8,8,🔴 Critical
+ORD00031,PROD013,17,71,68,Transport Strike,North America,38.14,0.82,7,🟡 Warning
+ORD00032,PROD023,18,265,195,None,Europe,14.33,0.51,2,🟢 OK
+ORD00033,PROD061,5,492,97,None,Asia Pacific,39.24,0.64,0,🟢 OK
+ORD00034,PROD039,17,394,81,Supplier Issue,Asia Pacific,15.69,0.79,6,🟡 Warning
+ORD00035,PROD053,17,479,153,Weather,Latin America,39.23,0.59,6,🟡 Warning
+ORD00036,PROD014,12,169,15,None,Europe,30.63,0.73,1,🟢 OK
+ORD00037,PROD061,14,474,28,Weather,Asia Pacific,49.4,0.64,5,🟡 Warning
+ORD00038,PROD027,6,401,38,Supplier Issue,North America,38.24,0.65,4,🟢 OK
+ORD00039,PROD017,19,197,141,Customs,Europe,45.5,0.94,6,🟡 Warning
+ORD00040,PROD062,14,103,68,None,North America,9.59,0.89,1,🟢 OK
+ORD00041,PROD035,19,288,141,None,North America,23.83,0.84,2,🟢 OK
+ORD00042,PROD006,20,389,131,None,Latin America,7.34,0.9,2,🟢 OK
+ORD00043,PROD056,13,191,172,Supplier Issue,Asia Pacific,23.77,0.69,5,🟡 Warning
+ORD00044,PROD037,17,18,188,Supplier Issue,Latin America,8.77,0.51,10,🔴 Critical
+ORD00045,PROD066,11,352,134,Customs,North America,43.9,0.73,5,🟡 Warning
+ORD00046,PROD053,4,441,153,Supplier Issue,Latin America,42.67,0.63,4,🟢 OK
+ORD00047,PROD066,17,220,166,Transport Strike,Latin America,18.64,0.75,6,🟡 Warning
+ORD00048,PROD039,17,143,111,Weather,Asia Pacific,41.56,0.54,6,🟡 Warning
+ORD00049,PROD003,8,164,88,Weather,Latin America,37.98,0.68,4,🟢 OK
+ORD00050,PROD050,8,141,36,Supplier Issue,Asia Pacific,46.41,0.72,4,🟢 OK
+ORD00051,PROD012,3,280,12,Customs,Latin America,38.85,0.78,4,🟢 OK
+ORD00052,PROD006,12,297,79,None,Latin America,16.71,0.96,1,🟢 OK
+ORD00053,PROD040,14,285,185,None,North America,32.44,0.89,1,🟢 OK
+ORD00054,PROD059,4,469,25,Transport Strike,North America,6.16,0.8,4,🟢 OK
+ORD00055,PROD063,4,439,60,None,Asia Pacific,25.0,0.78,0,🟢 OK
+ORD00056,PROD055,15,87,136,Weather,Latin America,44.29,0.69,10,🔴 Critical
+ORD00057,PROD019,5,329,193,Customs,Latin America,16.09,0.77,4,🟢 OK
+ORD00058,PROD005,7,264,44,Weather,North America,13.11,0.54,4,🟢 OK
+ORD00059,PROD027,4,221,72,None,Europe,39.63,0.74,0,🟢 OK
+ORD00060,PROD008,8,163,132,None,Europe,5.21,0.85,0,🟢 OK
+ORD00061,PROD003,8,170,87,Supplier Issue,Europe,34.79,0.67,4,🟢 OK
+ORD00062,PROD046,3,114,193,Weather,Latin America,30.21,0.67,7,🟡 Warning
+ORD00063,PROD016,21,265,194,Transport Strike,North America,41.51,0.88,6,🟡 Warning
+ORD00064,PROD040,21,297,176,Transport Strike,North America,22.59,0.58,6,🟡 Warning
+ORD00065,PROD008,20,283,16,Supplier Issue,Latin America,47.72,0.9,6,🟡 Warning
+ORD00066,PROD031,3,451,49,Weather,Asia Pacific,9.44,0.92,4,🟢 OK
+ORD00067,PROD052,19,265,22,Weather,Latin America,45.66,0.76,6,🟡 Warning
+ORD00068,PROD020,8,383,66,Supplier Issue,Europe,34.84,0.72,4,🟢 OK
+ORD00069,PROD058,10,307,113,None,Europe,7.73,0.54,0,🟢 OK
+ORD00070,PROD016,11,14,154,Supplier Issue,Latin America,13.24,0.52,10,🔴 Critical
+ORD00071,PROD059,7,242,10,Weather,Europe,40.28,0.93,4,🟢 OK
+ORD00072,PROD001,10,45,83,Transport Strike,North America,15.54,0.66,10,🔴 Critical
+ORD00073,PROD030,13,35,164,None,Asia Pacific,12.62,0.62,7,🟡 Warning
+ORD00074,PROD027,17,93,116,None,North America,24.74,0.51,6,🟡 Warning
+ORD00075,PROD065,3,259,41,Transport Strike,North America,20.97,0.81,4,🟢 OK
+ORD00076,PROD055,13,98,183,Transport Strike,North America,39.69,0.7,9,🔴 Critical
+ORD00077,PROD019,20,459,134,None,North America,23.24,0.7,2,🟢 OK
+ORD00078,PROD028,18,294,123,Supplier Issue,Asia Pacific,10.68,0.87,6,🟡 Warning
+ORD00079,PROD013,19,332,188,None,Europe,38.55,0.52,2,🟢 OK
+ORD00080,PROD060,20,101,28,Transport Strike,Asia Pacific,42.35,0.51,6,🟡 Warning
+ORD00081,PROD066,16,239,140,None,North America,6.26,0.8,2,🟢 OK
+ORD00082,PROD039,12,44,181,Transport Strike,Europe,41.13,0.61,10,🔴 Critical
+ORD00083,PROD017,17,459,26,Transport Strike,North America,16.27,0.58,6,🟡 Warning
+ORD00084,PROD006,5,306,122,Supplier Issue,Europe,33.58,0.87,4,🟢 OK
+ORD00085,PROD025,7,60,119,None,North America,47.01,0.81,4,🟢 OK
+ORD00086,PROD007,9,73,115,None,Asia Pacific,24.24,0.93,4,🟢 OK
+ORD00087,PROD062,4,7,65,None,Latin America,29.86,0.98,6,🟡 Warning
+ORD00088,PROD032,9,86,98,Transport Strike,Europe,31.02,0.55,8,🔴 Critical
+ORD00089,PROD019,9,427,34,None,Latin America,41.41,0.82,0,🟢 OK
+ORD00090,PROD007,3,208,62,Customs,Asia Pacific,48.34,0.87,4,🟢 OK
+ORD00091,PROD041,8,296,174,Supplier Issue,Asia Pacific,40.34,0.87,4,🟢 OK
+ORD00092,PROD059,5,461,155,None,Latin America,8.33,0.67,0,🟢 OK
+ORD00093,PROD002,16,225,146,Customs,Latin America,41.29,0.75,6,🟡 Warning
+ORD00094,PROD026,12,446,125,None,Latin America,23.46,0.82,1,🟢 OK
+ORD00095,PROD048,14,128,142,Customs,Europe,39.1,0.59,8,🔴 Critical
+ORD00096,PROD058,3,82,152,None,Europe,38.14,0.74,4,🟢 OK
+ORD00097,PROD044,16,407,151,Customs,Asia Pacific,24.32,0.92,6,🟡 Warning
+ORD00098,PROD009,8,176,23,None,Asia Pacific,33.37,0.66,0,🟢 OK
+ORD00099,PROD016,19,475,29,None,Europe,48.46,0.56,2,🟢 OK
+ORD00100,PROD008,8,263,114,Transport Strike,North America,15.14,0.92,4,🟢 OK

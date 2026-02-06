@@ -1,0 +1,61 @@
+product_id,product_name,category,total_sales,total_quantity,total_profit
+P0001,Venus Dark Bar 75g,bar,1851.36,798,72.0012
+P0002,Venus Almond Bar 100g,bar,2986.83,757,70.40220000000001
+P0003,Venus Orange Bar 100g,bar,2710.62,817,52.5773
+P0004,Venus Salted Caramel Bar 200g,bar,1883.99,650,54.132999999999996
+P0005,Venus Strawberry Praline 150g,praline,2280.18,749,68.6346
+P0006,Venus Milk Praline 90g,praline,3479.4,759,49.299
+P0007,Venus Dark Praline 75g,praline,3744.82,834,59.0831
+P0008,Venus Matcha Praline 100g,praline,4730.74,841,77.6883
+P0009,Venus Orange Assorted 150g,assorted,4907.4,720,58.6499
+P0010,Venus Matcha Assorted 90g,assorted,2449.04,758,38.479099999999995
+P0011,Venus White Assorted 150g,assorted,5293.84,691,64.1671
+P0012,Venus Almond Assorted 75g,assorted,2071.35,626,47.6581
+P0013,Venus Matcha Truffle 100g,truffle,1579.64,716,55.7448
+P0014,Venus White Truffle 50g,truffle,2826.25,772,57.7087
+P0015,Venus Dark Truffle 150g,truffle,2627.2799999999997,725,52.6824
+P0016,Venus Milk Truffle 50g,truffle,3208.8999999999996,626,64.0488
+P0017,Venus Strawberry Bites 40g,bites,953.06,776,58.119899999999994
+P0018,Venus Matcha Bites 75g,bites,4598.88,743,68.7094
+P0019,Venus Orange Bites 40g,bites,3079.2799999999997,635,49.6002
+P0020,Venus Salted Caramel Bites 90g,bites,5382.62,721,64.4872
+P0021,Apollo Matcha Bar 90g,bar,1357.59,767,62.6384
+P0022,Apollo Dark Bar 150g,bar,4001.58,777,45.9291
+P0023,Apollo Hazelnut Bar 200g,bar,4285.25,705,49.3052
+P0024,Apollo Orange Bar 200g,bar,4612.5199999999995,706,36.5696
+P0025,Apollo Almond Praline 200g,praline,5770.59,828,55.0488
+P0026,Apollo Hazelnut Praline 100g,praline,1571.58,753,46.5683
+P0027,Apollo White Praline 40g,praline,4495.7699999999995,818,57.3509
+P0028,Apollo Strawberry Praline 200g,praline,5367.46,756,65.6888
+P0029,Apollo Almond Assorted 50g,assorted,3418.0099999999998,707,70.2996
+P0030,Apollo Matcha Assorted 75g,assorted,3365.02,758,54.876599999999996
+P0031,Apollo Strawberry Assorted 100g,assorted,2574.87,760,51.1145
+P0032,Apollo Dark Assorted 75g,assorted,2129.4,822,42.0303
+P0033,Apollo Salted Caramel Truffle 50g,truffle,2030.62,776,49.829899999999995
+P0034,Apollo Orange Truffle 75g,truffle,2740.69,652,36.305600000000005
+P0035,Apollo Matcha Truffle 50g,truffle,4009.04,682,50.3846
+P0036,Apollo Dark Truffle 40g,truffle,2323.96,787,69.7776
+P0037,Apollo White Bites 50g,bites,3535.87,847,41.1434
+P0038,Apollo Matcha Bites 100g,bites,5094.5,726,51.1539
+P0039,Apollo Milk Bites 40g,bites,2417.25,733,53.9392
+P0040,Apollo Almond Bites 75g,bites,2988.18,778,63.7539
+P0041,Eros Salted Caramel Bar 200g,bar,3642.85,766,57.3133
+P0042,Eros Hazelnut Bar 90g,bar,3216.78,768,70.6909
+P0043,Eros Orange Bar 100g,bar,4626.5,758,50.401300000000006
+P0044,Eros Dark Bar 90g,bar,2253.0299999999997,687,55.42359999999999
+P0045,Eros White Praline 75g,praline,4472.34,686,55.2297
+P0046,Eros Salted Caramel Praline 150g,praline,3996.31,840,64.0415
+P0047,Eros Orange Praline 40g,praline,1611.95,833,42.8818
+P0048,Eros Strawberry Praline 50g,praline,2668.18,754,41.3142
+P0049,Eros White Assorted 90g,assorted,4044.27,798,71.1597
+P0050,Eros Salted Caramel Assorted 75g,assorted,4704.92,749,70.1475
+P0051,Eros Almond Assorted 90g,assorted,2384.71,742,68.7247
+P0052,Eros Dark Assorted 90g,assorted,2232.48,707,37.5816
+P0053,Eros Hazelnut Truffle 100g,truffle,2070.85,750,60.58689999999999
+P0054,Eros Salted Caramel Truffle 75g,truffle,3609.34,737,68.7826
+P0055,Eros Dark Truffle 40g,truffle,1430.98,774,60.4833
+P0056,Eros Orange Truffle 50g,truffle,3661.78,749,71.2308
+P0057,Eros Matcha Bites 100g,bites,3092.42,715,59.3594
+P0058,Eros Strawberry Bites 90g,bites,1834.95,701,63.8544
+P0059,Eros Dark Bites 50g,bites,4335.62,743,42.3678
+P0060,Eros Orange Bites 150g,bites,2784.73,839,43.7024

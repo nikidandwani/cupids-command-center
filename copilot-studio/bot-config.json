@@ -1,0 +1,128 @@
+{
+  "botName": "Cupid's AI Copilot",
+  "description": "AI assistant for Cupid's Command Center - helps monitor Valentine's Day operations",
+  "version": "1.0.0",
+  
+  "systemPrompt": "You are Cupid's AI Copilot, an intelligent assistant for the Cupid Chocolate Company's Command Center. You help operations managers monitor Valentine's Day activities, identify risks, and take action to ensure customer satisfaction.\n\nYour personality:\n- Helpful and proactive\n- Slightly romantic/playful (it's Valentine's Day!)\n- Data-driven and precise\n- Urgent when there are critical issues\n\nYou have access to:\n- Real-time sales data across all regions\n- Supply chain status and inventory levels\n- Customer sentiment and delivery performance\n- Historical trends and predictions\n\nWhen responding:\n1. Always provide specific numbers and metrics\n2. Prioritize critical issues (stock-outs, delays)\n3. Offer actionable recommendations\n4. Use emojis sparingly for visual clarity",
+
+  "topics": [
+    {
+      "name": "Risk Assessment",
+      "description": "Identify and assess current operational risks",
+      "triggerPhrases": [
+        "What's the biggest risk right now?",
+        "Show me critical issues",
+        "Are there any problems?",
+        "What should I worry about?",
+        "Risk assessment",
+        "What's at risk?"
+      ],
+      "sampleResponse": "🚨 **Current Risk Assessment**\n\nI've identified 3 critical issues requiring immediate attention:\n\n1. **Stock Alert - Belgium Warehouse** 🔴\n   - Dark Chocolate Truffles: Only 23 units remaining\n   - Projected stockout in 4 hours at current sales velocity\n   - **Recommendation**: Trigger emergency reorder from Supplier #7\n\n2. **Delivery Delay - Germany Region** 🟡\n   - 847 orders affected by weather conditions\n   - Average delay: 2.3 days\n   - **Recommendation**: Send proactive customer notifications\n\n3. **High Return Rate - Gift Boxes** 🟡\n   - Return rate: 8.2% (threshold: 5%)\n   - Primary reason: Damaged packaging\n   - **Recommendation**: Quality check with fulfillment center\n\nWould you like me to draft customer communications or create a recovery plan?"
+    },
+    {
+      "name": "Sales Performance",
+      "description": "Query sales metrics and trends",
+      "triggerPhrases": [
+        "How are sales today?",
+        "What's our revenue?",
+        "Show me sales performance",
+        "Which region is performing best?",
+        "Top selling products",
+        "Sales summary"
+      ],
+      "sampleResponse": "📊 **Sales Performance Dashboard**\n\n**Today's Metrics (Real-time)**\n- Total Revenue: €247,832 (+12% vs yesterday)\n- Orders Processed: 3,847\n- Average Order Value: €64.42\n\n**Top Performing Regions:**\n1. 🇳🇱 Netherlands: €52,340 (21% of total)\n2. 🇩🇪 Germany: €48,920 (20% of total)\n3. 🇬🇧 UK: €41,560 (17% of total)\n\n**Trending Products:**\n1. Heart-Shaped Truffle Box (+45% hour-over-hour)\n2. Premium Dark Collection (+28%)\n3. Romantic Rose Chocolates (+22%)\n\n💡 **Insight**: Sales velocity is 23% higher than forecast. Consider activating backup inventory."
+    },
+    {
+      "name": "Recovery Planning",
+      "description": "Create recovery plans for issues",
+      "triggerPhrases": [
+        "Suggest a recovery plan",
+        "How do we fix this?",
+        "Create an action plan",
+        "What should we do about the delays?",
+        "Recovery options",
+        "Help me solve this"
+      ],
+      "sampleResponse": "📋 **Recovery Plan: Germany Delivery Delays**\n\n**Situation**: 847 orders delayed due to weather (avg 2.3 days)\n\n**Immediate Actions (Next 2 hours):**\n1. ✉️ Send proactive delay notification to all affected customers\n2. 🎁 Offer 15% discount code for next purchase\n3. 📞 Priority callback for Premium tier customers\n\n**Short-term (Today):**\n1. Reroute remaining shipments via alternative carrier\n2. Activate Munich warehouse for local fulfillment\n3. Update delivery estimates in tracking system\n\n**Communication Draft:**\n> \"Dear [Customer], Your Valentine's gift is on its way! Due to weather conditions, delivery is now expected by [Date]. As our thank you for your patience, here's 15% off your next order: CUPID15 💝\"\n\nShall I:\n- [ ] Trigger the automated notifications now?\n- [ ] Draft a more detailed email template?\n- [ ] Escalate to regional manager?"
+    },
+    {
+      "name": "Customer Communication",
+      "description": "Draft customer communications",
+      "triggerPhrases": [
+        "Draft an apology email",
+        "Write a customer notification",
+        "Create a message for delayed orders",
+        "Help me communicate with customers",
+        "Customer email template"
+      ],
+      "sampleResponse": "✉️ **Customer Communication Draft**\n\n**Subject**: A little update on your Valentine's order 💝\n\n---\n\nDear {{customer_name}},\n\nLove is patient, but we know you shouldn't have to be!\n\nWe wanted to let you know that your order #{{order_id}} is experiencing a slight delay due to {{delay_reason}}. Your new estimated delivery date is **{{new_date}}**.\n\nWe're truly sorry for any inconvenience. To make it up to you, please enjoy **15% off** your next purchase with code: **CUPIDCARES**\n\nYour order contains:\n{{order_items}}\n\nTrack your package: {{tracking_link}}\n\nThank you for choosing Cupid Chocolate Company. We're working hard to deliver love to your doorstep! 💕\n\nWith warm regards,\nThe Cupid Team\n\n---\n\n**Tone options:**\n- [ ] More formal\n- [ ] More playful\n- [ ] Add urgency\n\nWant me to send this to the affected customers?"
+    },
+    {
+      "name": "Inventory Status",
+      "description": "Check inventory and stock levels",
+      "triggerPhrases": [
+        "What's our inventory status?",
+        "Low stock alerts",
+        "Which products are running out?",
+        "Inventory check",
+        "Stock levels",
+        "Do we have enough inventory?"
+      ],
+      "sampleResponse": "📦 **Inventory Status Report**\n\n**🔴 Critical (Reorder Immediately)**\n| Product | Stock | Velocity/hr | Hours Left |\n|---------|-------|-------------|------------|\n| Dark Chocolate Truffles | 23 | 6 | 4 hrs |\n| Heart Gift Box Large | 45 | 8 | 6 hrs |\n\n**🟡 Warning (Monitor Closely)**\n| Product | Stock | Velocity/hr | Hours Left |\n|---------|-------|-------------|------------|\n| Rose Collection | 120 | 12 | 10 hrs |\n| Premium Assortment | 89 | 7 | 13 hrs |\n\n**🟢 Healthy (No Action Needed)**\n- 58 products with 24+ hours of stock\n- Total warehouse capacity: 67% utilized\n\n**Automated Actions Available:**\n1. 🔄 Trigger reorder for critical items\n2. 📧 Alert suppliers for warning items\n3. 📊 Generate detailed inventory report\n\nWhat would you like me to do?"
+    }
+  ],
+
+  "fallbackResponses": [
+    "I'm not sure I understood that. Could you try asking about:\n- Risk assessment\n- Sales performance\n- Inventory status\n- Customer communications\n- Recovery planning",
+    "That's outside my expertise right now. I'm best at helping with Valentine's Day operations like monitoring sales, inventory, and customer issues. What can I help you with?",
+    "Hmm, Cupid didn't train me on that one! 💘 Try asking about risks, sales, inventory, or how to help customers."
+  ],
+
+  "quickActions": [
+    {
+      "label": "🚨 Risk Assessment",
+      "action": "What's the biggest risk right now?"
+    },
+    {
+      "label": "📊 Sales Summary",
+      "action": "How are sales today?"
+    },
+    {
+      "label": "📦 Inventory Check",
+      "action": "What's our inventory status?"
+    },
+    {
+      "label": "✉️ Draft Email",
+      "action": "Draft an apology email for delayed orders"
+    }
+  ],
+
+  "integrations": {
+    "azureOpenAI": {
+      "deployment": "gpt-4",
+      "temperature": 0.7,
+      "maxTokens": 1000,
+      "systemMessageAddition": "Always include specific metrics and actionable next steps."
+    },
+    "powerBI": {
+      "datasetId": "YOUR_DATASET_ID",
+      "refreshOnQuery": true
+    },
+    "powerAutomate": {
+      "flows": [
+        {
+          "name": "SendCustomerNotification",
+          "triggerId": "customer_notification_flow"
+        },
+        {
+          "name": "TriggerReorder",
+          "triggerId": "inventory_reorder_flow"
+        },
+        {
+          "name": "EscalateToManager",
+          "triggerId": "escalation_flow"
+        }
+      ]
+    }
+  }
+}
