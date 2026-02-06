@@ -54,7 +54,50 @@ An AI-Powered Valentine's Operations Hub built for GeeksterFY26 Hackathon.
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Quick Start (Run Dashboard in 2 Minutes)
+
+### Prerequisites
+- Python 3.10+ installed
+- pip (Python package manager)
+
+### Steps
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/nikidandwani/cupids-command-center.git
+cd cupids-command-center
+
+# 2. Install dependencies
+pip install pandas plotly
+
+# 3. Generate and open the dashboard
+cd dashboard
+python generate_dashboard.py
+```
+
+The dashboard will automatically open in your browser! 🎉
+
+### Alternative: Direct HTML
+If you just want to view the dashboard without regenerating:
+1. Navigate to `dashboard/` folder
+2. Open `cupids_command_center.html` in any browser
+
+---
+
+## 📊 Dashboard Features
+
+| Feature | Description |
+|---------|-------------|
+| 📈 KPI Cards | Revenue, Orders, Risk Level, Alerts (clickable) |
+| 🌍 Sales by Region | Interactive chart with drill-down |
+| 🎯 Risk Radar | Gauge showing overall risk score |
+| 📦 Inventory Alerts | Traffic light status table |
+| 🚚 Delivery Delays | Region-specific delay information |
+| 🤖 AI Copilot | Chat panel with quick actions |
+
+---
+
+## 🛠️ Full Setup (For Development)
 
 ### 1. Data Preparation
 ```bash
